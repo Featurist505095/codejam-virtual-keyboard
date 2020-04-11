@@ -7,6 +7,8 @@ class VirtualKeyboard {
     this.checkSessionStore();
     this.keysButtonClass = 0;
     this.keysCode = 5;
+    this.textareaCurrentState = '';
+    this.carriagePosition = 0;
 
     this.keys = [
       ['writer', '`', '~', 'ё', 'Ё', 'Backquote'],
@@ -245,16 +247,56 @@ class VirtualKeyboard {
     const textarea = document.querySelector('textarea');
 
     if (object.classList.contains('writer')) {
-      textarea.innerHTML += object.innerHTML;
+      this.textareaCurrentState =
+        this.textareaCurrentState.slice(0, this.carriagePosition) +
+        object.innerHTML +
+        this.textareaCurrentState.slice(this.carriagePosition);
+      textarea.innerHTML = this.textareaCurrentState;
+      this.carriagePosition += 1;
+    } else if (object.classList.contains('arrowleft')) {
+      this.carriagePosition =
+        this.carriagePosition > 0 ? this.carriagePosition - 1 : 0;
+    } else if (object.classList.contains('arrowright')) {
+      this.carriagePosition =
+        this.carriagePosition < this.textareaCurrentState.length
+          ? this.carriagePosition + 1
+          : this.textareaCurrentState.length;
     } else if (object.classList.contains('tab')) {
-      textarea.innerHTML += '\t';
+      this.textareaCurrentState = `${this.textareaCurrentState.slice(
+        0,
+        this.carriagePosition
+      )}\t${this.textareaCurrentState.slice(this.carriagePosition)}`;
+      textarea.innerHTML = this.textareaCurrentState;
+      this.carriagePosition += 1;
     } else if (object.classList.contains('enter')) {
-      textarea.innerHTML += '\n';
+      this.textareaCurrentState = `${this.textareaCurrentState.slice(
+        0,
+        this.carriagePosition
+      )}\n${this.textareaCurrentState.slice(this.carriagePosition)}`;
+      textarea.innerHTML = this.textareaCurrentState;
+      this.carriagePosition += 1;
     } else if (object.classList.contains('space')) {
-      textarea.innerHTML += ' ';
+      this.textareaCurrentState = `${this.textareaCurrentState.slice(
+        0,
+        this.carriagePosition
+      )} ${this.textareaCurrentState.slice(this.carriagePosition)}`;
+      textarea.innerHTML = this.textareaCurrentState;
+      this.carriagePosition += 1;
     } else if (object.classList.contains('backspace')) {
-      textarea.innerHTML = textarea.innerHTML.slice(0, -1);
+      if (this.carriagePosition > 0) {
+        this.textareaCurrentState =
+          this.textareaCurrentState.slice(0, this.carriagePosition - 1) +
+          this.textareaCurrentState.slice(this.carriagePosition);
+        textarea.innerHTML = this.textareaCurrentState;
+        this.carriagePosition -= 1;
+      }
+    } else if (object.classList.contains('del')) {
+      this.textareaCurrentState =
+        this.textareaCurrentState.slice(0, this.carriagePosition) +
+        this.textareaCurrentState.slice(this.carriagePosition + 1);
+      textarea.innerHTML = this.textareaCurrentState;
     }
+
   }
 
   textareaWriterByMouse(event) {
