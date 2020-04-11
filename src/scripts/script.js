@@ -243,41 +243,35 @@ class VirtualKeyboard {
     this.capsLockCounter = this.capsLockCounter === 1 ? 0 : 1;
   }
 
-  textareaWriterByMouse(event) {
-    const { target } = event;
+  writer(object) {
     const textarea = document.querySelector('textarea');
 
-    if (target.classList.contains('writer')) {
-      textarea.innerHTML += target.innerHTML;
-    } else if (target.classList.contains('tab')) {
+    if (object.classList.contains('writer')) {
+      textarea.innerHTML += object.innerHTML;
+    } else if (object.classList.contains('tab')) {
       textarea.innerHTML += '\t';
-    } else if (target.classList.contains('enter')) {
+    } else if (object.classList.contains('enter')) {
       textarea.innerHTML += '\n';
-    } else if (target.classList.contains('space')) {
+    } else if (object.classList.contains('space')) {
       textarea.innerHTML += ' ';
-    } else if (target.classList.contains('backspace')) {
+    } else if (object.classList.contains('backspace')) {
       textarea.innerHTML = textarea.innerHTML.slice(0, -1);
     }
+  }
+
+  textareaWriterByMouse(event) {
+    const { target } = event;
+
+    this.writer(target);
   }
 
   textareaWriterByKeyboard(event) {
     const { code } = event;
     const buttons = document.querySelectorAll('button');
-    const textarea = document.querySelector('textarea');
 
     this.keys.forEach((item, i) => {
       if (item[this.keysCode] === code) {
-        if (buttons[i].classList.contains('writer')) {
-          textarea.innerHTML += buttons[i].innerHTML;
-        } else if (buttons[i].classList.contains('tab')) {
-          textarea.innerHTML += '\t';
-        } else if (buttons[i].classList.contains('enter')) {
-          textarea.innerHTML += '\n';
-        } else if (buttons[i].classList.contains('space')) {
-          textarea.innerHTML += ' ';
-        } else if (buttons[i].classList.contains('backspace')) {
-          textarea.innerHTML = textarea.innerHTML.slice(0, -1);
-        }
+        this.writer(buttons[i]);
       }
     });
   }
