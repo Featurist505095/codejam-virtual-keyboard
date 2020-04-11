@@ -215,10 +215,7 @@ class VirtualKeyboard {
           this.changeLanguage();
           break;
         }
-        case combinations[3]: {
-          this.letterCase = 0;
-          break;
-        }
+        case combinations[3]:
         default: {
           this.letterCase = 0;
           break;
