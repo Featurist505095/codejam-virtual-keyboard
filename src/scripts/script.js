@@ -7,8 +7,9 @@ class VirtualKeyboard {
     this.checkSessionStore();
     this.keysButtonClass = 0;
     this.keysCode = 5;
-    this.textareaCurrentState = '';
-    this.carriagePosition = 0;
+    this.textareaLeftState = [];
+    this.textareaCarriage = 'ǁ';
+    this.textareaRightState = [];
 
     this.keys = [
       ['writer', '`', '~', 'ё', 'Ё', 'Backquote'],
@@ -245,58 +246,88 @@ class VirtualKeyboard {
 
   writer(object) {
     const textarea = document.querySelector('textarea');
+    const textareaLength = 93;
 
     if (object.classList.contains('writer')) {
-      this.textareaCurrentState =
-        this.textareaCurrentState.slice(0, this.carriagePosition) +
-        object.innerHTML +
-        this.textareaCurrentState.slice(this.carriagePosition);
-      textarea.innerHTML = this.textareaCurrentState;
-      this.carriagePosition += 1;
-    } else if (object.classList.contains('arrowleft')) {
-      this.carriagePosition =
-        this.carriagePosition > 0 ? this.carriagePosition - 1 : 0;
-    } else if (object.classList.contains('arrowright')) {
-      this.carriagePosition =
-        this.carriagePosition < this.textareaCurrentState.length
-          ? this.carriagePosition + 1
-          : this.textareaCurrentState.length;
+      this.textareaLeftState.push(object.innerHTML);
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
     } else if (object.classList.contains('tab')) {
-      this.textareaCurrentState = `${this.textareaCurrentState.slice(
-        0,
-        this.carriagePosition
-      )}\t${this.textareaCurrentState.slice(this.carriagePosition)}`;
-      textarea.innerHTML = this.textareaCurrentState;
-      this.carriagePosition += 1;
+      this.textareaLeftState.push('\t');
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
     } else if (object.classList.contains('enter')) {
-      this.textareaCurrentState = `${this.textareaCurrentState.slice(
-        0,
-        this.carriagePosition
-      )}\n${this.textareaCurrentState.slice(this.carriagePosition)}`;
-      textarea.innerHTML = this.textareaCurrentState;
-      this.carriagePosition += 1;
-    } else if (object.classList.contains('space')) {
-      this.textareaCurrentState = `${this.textareaCurrentState.slice(
-        0,
-        this.carriagePosition
-      )} ${this.textareaCurrentState.slice(this.carriagePosition)}`;
-      textarea.innerHTML = this.textareaCurrentState;
-      this.carriagePosition += 1;
+      this.textareaLeftState.push('\n');
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
     } else if (object.classList.contains('backspace')) {
-      if (this.carriagePosition > 0) {
-        this.textareaCurrentState =
-          this.textareaCurrentState.slice(0, this.carriagePosition - 1) +
-          this.textareaCurrentState.slice(this.carriagePosition);
-        textarea.innerHTML = this.textareaCurrentState;
-        this.carriagePosition -= 1;
+      this.textareaLeftState.pop();
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
+    } else if (object.classList.contains('arrowleft')) {
+      if (this.textareaLeftState.length > 0) {
+        this.textareaRightState.unshift(this.textareaLeftState.pop());
+        textarea.innerHTML = [
+          ...this.textareaLeftState,
+          this.textareaCarriage,
+          ...this.textareaRightState
+        ].join('');
+      }
+    } else if (object.classList.contains('arrowright')) {
+      if (this.textareaRightState.length > 0) {
+        this.textareaLeftState.push(this.textareaRightState.shift());
+        textarea.innerHTML = [
+          ...this.textareaLeftState,
+          this.textareaCarriage,
+          ...this.textareaRightState
+        ].join('');
       }
     } else if (object.classList.contains('del')) {
-      this.textareaCurrentState =
-        this.textareaCurrentState.slice(0, this.carriagePosition) +
-        this.textareaCurrentState.slice(this.carriagePosition + 1);
-      textarea.innerHTML = this.textareaCurrentState;
+      this.textareaRightState.shift();
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
+    } else if (object.classList.contains('arrowup')) {
+      for (let i = 0; i < textareaLength; i += 1) {
+        if (this.textareaLeftState.length > 0) {
+          this.textareaRightState.unshift(this.textareaLeftState.pop());
+        } else {
+          break;
+        }
+      }
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
+    } else if (object.classList.contains('arrowdown')) {
+      for (let i = 0; i < textareaLength; i += 1) {
+        if (this.textareaRightState.length > 0) {
+          this.textareaLeftState.push(this.textareaRightState.shift());
+        } else {
+          break;
+        }
+      }
+      textarea.innerHTML = [
+        ...this.textareaLeftState,
+        this.textareaCarriage,
+        ...this.textareaRightState
+      ].join('');
     }
-
   }
 
   textareaWriterByMouse(event) {
