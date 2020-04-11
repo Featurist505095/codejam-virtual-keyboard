@@ -267,8 +267,6 @@ class VirtualKeyboard {
 
     this.keys.forEach((item, i) => {
       if (item[this.keysCode] === code) {
-        console.log(this.keys[i][this.keysCode]);
-        console.log(buttons[i].innerHTML);
         if (buttons[i].classList.contains('writer')) {
           textarea.innerHTML += buttons[i].innerHTML;
         } else if (buttons[i].classList.contains('tab')) {
