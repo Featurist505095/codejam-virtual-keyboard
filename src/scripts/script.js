@@ -91,12 +91,12 @@ class VirtualKeyboard {
   }
 
   checkSessionStore() {
-    if (this.lang === null) {
+    if (!this.lang) {
       window.sessionStorage.setItem('keyboardLang', 1);
       this.lang = 1;
     }
 
-    if (this.letterCase === null) {
+    if (!this.letterCase) {
       window.sessionStorage.setItem('keyboardCase', 0);
       this.letterCase = 0;
     }
@@ -105,8 +105,8 @@ class VirtualKeyboard {
   createField() {
     const textarea = document.createElement('textarea');
     const keyboard = document.createElement('div');
-    textarea.id = 'textarea';
-    keyboard.id = 'keyboard';
+    textarea.setAttribute('id', 'textarea');
+    keyboard.setAttribute('id', 'keyboard');
     document.body.append(textarea);
     document.body.append(keyboard);
   }
@@ -115,7 +115,8 @@ class VirtualKeyboard {
     this.keys.forEach(item => {
       const button = document.createElement('button');
       button.innerText = item[Number(this.lang) + Number(this.letterCase)];
-      button.className = item[this.keysButtonClass];
+      button.setAttribute('class', `${item[this.keysButtonClass]}`);
+
       document.querySelector('#keyboard').append(button);
     });
   }
