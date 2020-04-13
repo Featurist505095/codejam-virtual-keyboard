@@ -1,0 +1,14 @@
+$font-stack: 'Open Sans', 'sans-serif';
+
+#keyboard {
+  width: 690px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+textarea {
+  width: 685px;
+  height: 200px;
+  margin: 0 auto;
+}
